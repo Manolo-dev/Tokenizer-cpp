@@ -74,7 +74,6 @@ Le typage des tokens peut par exemple être utile pour créer un fichier de colo
 # Grammaire
 
 Oui, il faut une grammaire à l'outil de grammaire ! Grammaception !
- c++
 
 ## Corps
 
