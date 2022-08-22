@@ -64,6 +64,8 @@ Le typage des tokens peut par exemple être utile pour créer un fichier de colo
 
 ## To do list
 
+- [x] Gestion de l'arborescence
+- [ ] Lecteur grammaire
 - [ ] Grammaire
 - [ ] Classe Token
 - [ ] Classe Node
@@ -74,7 +76,6 @@ Le typage des tokens peut par exemple être utile pour créer un fichier de colo
 # Grammaire
 
 Oui, il faut une grammaire à l'outil de grammaire ! Grammaception !
- c++
 
 ## Corps
 

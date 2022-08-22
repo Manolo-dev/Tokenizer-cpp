@@ -18,12 +18,14 @@ public:
     Node & get(std::string index);
     std::string get();
     int size();
+    void add(std::string key, Node newNode);
+    void change(std::string key, Node changedNode);
+    Node & operator[](std::string key);
+    friend std::ostream & operator<<(std::ostream & os, Node & root);
 private:
+    void print(int level);
     std::string _data;
     std::map<std::string, Node> _childs;
 };
-
-void print(const Node & root, int level);
-std::ostream& operator<<(std::ostream& os, Node & root);
 
 #endif //TOKENIZER_NODE_H

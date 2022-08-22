@@ -7,24 +7,77 @@
  * @functions:
  * @datas:
  * @imports:
+ * * <iostream>
+ * * <fstream>
+ * * <stack>
+ * * "Node.h"
  */
 
 #include <iostream>
+#include <fstream>
+#include <stack>
 #include "Node.h"
 
 using namespace std;
 
-int main() {
-    Node root({
-        {"variables", Node({
-            {"open", Node("(")},
-            {"close", Node(")")}
-        })},
-        {"main", Node({
-            {"match", Node("\\s\\S")},
-            {"save", Node("empty")}
-        })}
-    });
+Node parser(ifstream & grammarFile) {
+    Node root{};
+    stack<Node *> currentNode;
+    currentNode.push(&root);
+
+    string line;
+    int tab{0};
+    string key;
+    Node value;
+
+    while(getline(grammarFile, line)) {
+        int i = 0;
+        while(line[i] == '\t' and i < line.size()) i++;
+
+        line = line.substr(i);
+        cout << line << " ";
+
+        if(i > tab) {
+            cout << "up" << " ";
+            currentNode.push(&currentNode.top()->get(key));
+            tab++;
+        }
+
+        while(i < tab) {
+            cout << "down" << " ";
+            currentNode.pop();
+            tab--;
+        }
+
+        if(line.substr(line.size() - 1) == ":") {
+            key   = line.substr(0, line.size() - 1);
+            value = Node{};
+            currentNode.top()->add(key, value);
+        }
+
+        if(line.find(": ") != string::npos) {
+            key   = line.substr(0, line.find(": "));
+            value = Node(line.substr(line.find(": ") + 2));
+            currentNode.top()->add(key, value);
+        }
+
+        cout << endl;
+    }
+
     cout << root;
+
+    return root;
+}
+
+int main() {
+    string const grammarNameFile("D:/workspace/Tokenizer/test.txt");
+    ifstream grammarFile(grammarNameFile);
+
+    if(grammarFile) {
+        parser(grammarFile);
+    } else {
+        cerr << "ERROR: Unable to open grammar file." << endl;
+    }
+
     return 0;
 }

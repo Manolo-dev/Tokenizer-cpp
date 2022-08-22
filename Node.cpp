@@ -31,15 +31,29 @@ int Node::size() {
     return _childs.size();
 }
 
-void print(Node & root, int level) {
-    std::cout << root.get() << std::endl;
-    for(auto & [key, value]: root.getall()) {
+void Node::add(std::string key, Node newNode) {
+    _childs.insert(std::pair<std::string, Node &>(key, newNode));
+}
+
+void Node::change(std::string key, Node changedNode) {
+    std::map<std::string, Node>::iterator it = _childs.find(key);
+    if (it != _childs.end())
+        it->second = changedNode;
+}
+
+Node & Node::operator[](std::string key) {
+    return _childs[key];
+}
+
+void Node::print(int level) {
+    std::cout << _data << std::endl;
+    for(auto & [key, value]: _childs) {
         std::cout << std::string(level * 4, ' ') << key << " ";
-        print(value, level + 1);
+        value.print(level + 1);
     }
 }
 
-std::ostream& operator<<(std::ostream& os, Node & root) {
-    print(root, 0);
+std::ostream & operator<<(std::ostream & os, Node & root) {
+    root.print(0);
     return os;
 }
