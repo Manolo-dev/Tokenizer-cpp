@@ -35,16 +35,13 @@ Node parser(ifstream & grammarFile) {
         while(line[i] == '\t' and i < line.size()) i++;
 
         line = line.substr(i);
-        cout << line << " ";
 
         if(i > tab) {
-            cout << "up" << " ";
             currentNode.push(&currentNode.top()->get(key));
             tab++;
         }
 
         while(i < tab) {
-            cout << "down" << " ";
             currentNode.pop();
             tab--;
         }
@@ -60,8 +57,6 @@ Node parser(ifstream & grammarFile) {
             value = Node(line.substr(line.find(": ") + 2));
             currentNode.top()->add(key, value);
         }
-
-        cout << endl;
     }
 
     cout << root;
