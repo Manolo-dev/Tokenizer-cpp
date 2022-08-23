@@ -18,20 +18,18 @@
 #include <stack>
 #include "Node.h"
 
-using namespace std;
-
-Node parser(ifstream & grammarFile) {
+Node parser(std::ifstream & grammarFile) {
     Node root{};
-    stack<Node *> currentNode;
+    std::stack<Node *> currentNode;
     currentNode.push(&root);
 
-    string line;
-    int tab{0};
-    string key;
+    std::string line;
+    unsigned int tab{0U};
+    std::string key;
     Node value;
 
     while(getline(grammarFile, line)) {
-        int i = 0;
+        unsigned int i = 0U;
         while(line[i] == '\t' and i < line.size()) i++;
 
         line = line.substr(i);
@@ -46,32 +44,32 @@ Node parser(ifstream & grammarFile) {
             tab--;
         }
 
-        if(line.substr(line.size() - 1) == ":") {
-            key   = line.substr(0, line.size() - 1);
+        if(line.substr(line.size() - 1U) == ":") {
+            key   = line.substr(0U, line.size() - 1U);
             value = Node{};
             currentNode.top()->add(key, value);
         }
 
-        if(line.find(": ") != string::npos) {
-            key   = line.substr(0, line.find(": "));
-            value = Node(line.substr(line.find(": ") + 2));
+        if(line.find(": ") != std::string::npos) {
+            key   = line.substr(0U, line.find(": "));
+            value = Node(line.substr(line.find(": ") + 2U));
             currentNode.top()->add(key, value);
         }
     }
 
-    cout << root;
+    std::cout << root;
 
     return root;
 }
 
 int main() {
-    string const grammarNameFile("D:/workspace/Tokenizer/test.txt");
-    ifstream grammarFile(grammarNameFile);
+    const std::string grammarNameFile("D:/workspace/Tokenizer/test.txt");
+    std::ifstream grammarFile(grammarNameFile);
 
     if(grammarFile) {
-        parser(grammarFile);
+        Node grammar{parser(grammarFile)};
     } else {
-        cerr << "ERROR: Unable to open grammar file." << endl;
+        std::cerr << "ERROR: Unable to open grammar file." << std::endl;
     }
 
     return 0;
