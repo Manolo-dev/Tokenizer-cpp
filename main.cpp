@@ -23,34 +23,69 @@ Node parser(std::ifstream & grammarFile) {
     std::stack<Node *> currentNode;
     currentNode.push(&root);
 
-    std::string line;
+    std::string  line;
     unsigned int tab{0U};
-    std::string key;
-    Node value;
+    Node         value;
 
     while(getline(grammarFile, line)) {
-        unsigned int i = 0U;
-        while(line[i] == '\t' and i < line.size()) i++;
+        unsigned int i;
+        for(i = 0U; line[i] == ' ' and i < line.size(); i++);
 
         line = line.substr(i);
 
-        if(i > tab) {
-            currentNode.push(&currentNode.top()->get(key));
+        if(i/2U > tab) {
             tab++;
         }
 
-        while(i < tab) {
+        while(i/2U < tab) {
             currentNode.pop();
             tab--;
         }
 
+        if(line.substr(0U, 2U) == "- ") {
+            if(currentNode.top()->type() == typeNode::null) {
+                currentNode.top()->type(typeNode::list);
+            }
+
+            if(currentNode.top()->type() == typeNode::dict) {
+                currentNode.pop();
+                currentNode.top()->add(Node{Node{typeNode::list}});
+                currentNode.push(currentNode.top()->last());
+            }
+
+            line = line.substr(2U);
+
+            while(line.substr(0U, 2U) == "- ") {
+                line = line.substr(2U);
+
+                currentNode.top()->add(Node{Node{typeNode::list}});
+                currentNode.push(currentNode.top()->last());
+            }
+
+            value = Node(line);
+            currentNode.top()->add(value);
+        }
+
         if(line.substr(line.size() - 1U) == ":") {
+            std::string key;
             key   = line.substr(0U, line.size() - 1U);
             value = Node{};
             currentNode.top()->add(key, value);
+            currentNode.push(&currentNode.top()->get(key));
         }
 
         if(line.find(": ") != std::string::npos) {
+            if(currentNode.top()->type() == typeNode::null) {
+                currentNode.top()->type(typeNode::dict);
+            }
+
+            if(currentNode.top()->type() == typeNode::list) {
+                currentNode.pop();
+                currentNode.top()->add(Node{Node{typeNode::dict}});
+                currentNode.push(currentNode.top()->last());
+            }
+
+            std::string key;
             key   = line.substr(0U, line.find(": "));
             value = Node(line.substr(line.find(": ") + 2U));
             currentNode.top()->add(key, value);
@@ -63,7 +98,7 @@ Node parser(std::ifstream & grammarFile) {
 }
 
 int main() {
-    const std::string grammarNameFile("D:/workspace/Tokenizer/test.txt");
+    const std::string grammarNameFile("../test.txt");
     std::ifstream grammarFile(grammarNameFile);
 
     if(grammarFile) {

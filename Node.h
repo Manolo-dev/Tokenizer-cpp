@@ -15,6 +15,8 @@ enum class typeNode {
 class Node {
 public:
     Node();
+    explicit Node(typeNode && type);
+    explicit Node(typeNode & type);
     explicit Node(std::string && data);
     explicit Node(std::string & data);
     explicit Node(std::vector<Node> && nodes);
@@ -23,6 +25,9 @@ public:
     explicit Node(std::map<std::string, Node> & nodes);
 
     std::string get();
+    typeNode type();
+    void type(typeNode newType);
+
     Node & get(unsigned int index);
     Node & get(const std::string && key);
     Node & get(const std::string & key);
@@ -32,6 +37,8 @@ public:
     Node & operator[](const std::string & key);
 
     unsigned long long size();
+
+    Node * last();
 
     void add(std::string && newData);
     void add(std::string & newData);
@@ -59,4 +66,5 @@ private:
     std::string _data;
     std::vector<Node> _childs_v;
     std::map<std::string, Node> _childs_m;
+    Node * _lastElement;
 };
