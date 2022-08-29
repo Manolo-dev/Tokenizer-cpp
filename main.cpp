@@ -10,12 +10,16 @@
  * * <iostream>
  * * <fstream>
  * * <stack>
+ * * <vector>
+ * * <numeric>
  * * "Node.h"
  */
 
 #include <iostream>
 #include <fstream>
 #include <stack>
+#include <vector>
+#include <numeric>
 #include "Node.h"
 
 Node parser(std::ifstream & grammarFile) {
@@ -23,26 +27,39 @@ Node parser(std::ifstream & grammarFile) {
     std::stack<Node *> currentNode;
     currentNode.push(&root);
 
-    std::string  line;
-    unsigned int tab{0U};
-    Node         value;
+    std::string line;
+    std::vector<unsigned int> tab;
+    Node value;
+    std::string tempValue;
+    tab.push_back(0U);
 
-    while(getline(grammarFile, line)) {
-        unsigned int i;
-        for(i = 0U; line[i] == ' ' and i < line.size(); i++);
+    while(std::getline(grammarFile, line)) {
+        while(line.back() == ' ' or line.back() == '\t') {line = line.substr(0U, line.size() - 1U);}
+        if(line == "") {continue;}
+
+        size_t i;
+        for(i = 0U; line[i] == ' ' and i != std::string::npos; i++) {}
 
         line = line.substr(i);
 
-        if(i/2U > tab) {
-            tab++;
+        unsigned int totalTab = std::accumulate(tab.begin(), tab.end(), 0U);
+        if(i > totalTab) {
+            tab.push_back(static_cast<unsigned int>(i - totalTab));
+            totalTab += static_cast<unsigned int>(i - totalTab);
         }
 
-        while(i/2U < tab) {
+        while(i < totalTab) {
             currentNode.pop();
-            tab--;
+            tab.pop_back();
+            totalTab = std::accumulate(tab.begin(), tab.end(), 0U);
         }
 
-        if(line.substr(0U, 2U) == "- ") {
+        if(i != totalTab) {
+            std::cerr << "The tab return is incorrect." << std::endl;
+            throw EXIT_FAILURE;
+        }
+
+        if(line.substr(0U, 2U) == "- " or line.substr(0U, 2U) == "-\t") {
             if(currentNode.top()->type() == typeNode::null) {
                 currentNode.top()->type(typeNode::list);
             }
@@ -55,15 +72,19 @@ Node parser(std::ifstream & grammarFile) {
 
             line = line.substr(2U);
 
-            while(line.substr(0U, 2U) == "- ") {
+            while(line.substr(0U, 2U) == "- " or line.substr(0U, 2U) == "-\t") {
                 line = line.substr(2U);
 
                 currentNode.top()->add(Node{Node{typeNode::list}});
                 currentNode.push(currentNode.top()->last());
+                tab.push_back(2U);
+                totalTab += 2U;
             }
 
-            value = Node(line);
-            currentNode.top()->add(value);
+            tempValue = line;
+            currentNode.top()->add(Node{});
+            currentNode.push(currentNode.top()->last());
+            goto extract;
         }
 
         if(line.substr(line.size() - 1U) == ":") {
@@ -72,8 +93,9 @@ Node parser(std::ifstream & grammarFile) {
             value = Node{};
             currentNode.top()->add(key, value);
             currentNode.push(&currentNode.top()->get(key));
+            continue;
         }
-
+        
         if(line.find(": ") != std::string::npos) {
             if(currentNode.top()->type() == typeNode::null) {
                 currentNode.top()->type(typeNode::dict);
@@ -87,9 +109,63 @@ Node parser(std::ifstream & grammarFile) {
 
             std::string key;
             key   = line.substr(0U, line.find(": "));
-            value = Node(line.substr(line.find(": ") + 2U));
-            currentNode.top()->add(key, value);
+
+            tempValue = line.substr(line.find(": ") + 2U);
+            currentNode.top()->add(key, Node{});
+            currentNode.push(currentNode.top()->last());
+            goto extract;
         }
+        continue;
+
+        extract:
+        while(tempValue.front() == ' ' or tempValue.front() == '\t') {tempValue = tempValue.substr(1U);}
+
+        if(tempValue == "|") {
+            tempValue = "";
+            std::string tempLine;
+            std::vector<size_t> tempTab;
+            std::streampos oldLine;
+            do {
+                oldLine = grammarFile.tellg();
+                if(!static_cast<bool>(std::getline(grammarFile, tempLine))) {break;}
+                size_t j;
+                for(j = 0U; tempLine[j] == ' ' and j != std::string::npos; j++) {}
+                tempTab.push_back(j);
+                if(tempTab.back() <= totalTab) {break;}
+                tempValue += tempLine.substr(tempTab.front()) + "\\n";
+            } while(true);
+
+            if(tempValue.size() > 0U) {
+                tempValue = tempValue.substr(0U, tempValue.size() - 2U);
+            }
+
+            if(grammarFile.seekg(oldLine, std::ios::beg)) {}
+            currentNode.top()->add(tempValue);
+        } else if(tempValue == ">") {
+            tempValue = "";
+            std::string tempLine;
+            std::vector<size_t> tempTab;
+            std::streampos oldLine;
+            do {
+                oldLine = grammarFile.tellg();
+                if(!static_cast<bool>(std::getline(grammarFile, tempLine))) {break;}
+                size_t j;
+                for(j = 0U; tempLine[j] == ' ' and j != std::string::npos; j++) {}
+                tempTab.push_back(j);
+                if(tempTab.back() <= totalTab) {break;}
+                if(tempLine == "") {
+                    tempLine = "\n";
+                }
+                tempValue += tempLine.substr(tempTab.front());
+            } while(tempTab.back() > totalTab);
+
+            if(grammarFile.seekg(oldLine, std::ios::beg)) {}
+            currentNode.top()->add(tempValue);
+        } else {
+            currentNode.top()->add(tempValue);
+        }
+
+        currentNode.pop();
     }
 
     std::cout << root;

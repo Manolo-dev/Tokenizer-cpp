@@ -1,14 +1,14 @@
 # Tokenizer
 
-Le Tokenizer est un analyseur lexicale, il permet, comme Flex and Yacc par exemple, de tokenizer du code, c'est à dire transformer du code en liste de tokens. En l'occurence, contrairement à Flex and Yacc, la liste de token est hiérarchisée et chaque token est typé.
+Le Tokenizer est un analyseur lexical, il permet, comme Flex and Yacc par exemple, de tokenizer du code, c'est-à-dire transformer du code en liste de tokens. En occurrence, contrairement à Flex and Yacc, la liste de token est hiérarchisée et chaque token est typé.
 
 ### Qu'est-ce que c'est quoi dis donc un token ?
 
-Un token, litteralement, c'est un jeton... Bof bof comme définition... Repprenons. Un token c'est une chaîne de caractères qui, ensemble, ont une signification. En bon français, la chaîne de caractères qui forme un jeton est appelée Lexeme.
+Un token, littéralement, c'est un jeton... Bof bof comme définition... Reprenons. Un token est une chaîne de caractères qui, ensemble, ont une signification. En bon français, la chaîne de caractères qui forme un jeton est appelée Lexeme.
 
 ### Et à quoi ça sert ?
 
-La tokenization, c'est la première étape de la compilation ou de l'interprétation de la plupart des langages informatiques. Prenons Python par exemple, l'ordinateur ne sait absolument pas quoi faire avec le ficher qu'on lui donne, il le découpe donc pour avoir chacun des mots du code et pouvoir comprendre ce qu'on lui demande.
+La tokenization, c'est la première étape de la compilation ou de l'interprétation de la plupart des langages informatiques. Prenons Python par exemple, l'ordinateur ne sait absolument pas quoi faire avec le fichier qu'on lui donne, il le découpe donc pour avoir chacun des mots du code et pouvoir comprendre ce qu'on lui demande.
 
 ---
 
@@ -21,12 +21,12 @@ def hello(name) :
     print("Hello", name, "!")
 ```
 
-sera convertit en YAML (ou n'importe quel autre langage de stockage de données comme JSON par exemple) en :
+Sera converti en YAML (ou n'importe quel autre langage de stockage de données, JSON par exemple) en :
 
 ```yaml
 ---
 - {value: 'def', type: function.declaration}
-- {value: 'hello', type: name.funciton.declaration}
+- {value: 'hello', type: name.function.declaration}
 - {value: '(', type: punctuation.begin}
 - {value: 'name', type: parameter}
 - {value: ')', type: punctuation.end}
@@ -41,7 +41,7 @@ sera convertit en YAML (ou n'importe quel autre langage de stockage de données 
   - {value: ')', type: punctuation.end}
 ```
 
-Ici les tokens sont hiérarchisés et typés, c'est à dire que pour chaque nœud, une nouvelle liste de tokens est créée et pour chaque token de cette liste, un type lui est appliqué.
+Ici les tokens sont hiérarchisés et typés, c'est-à-dire que pour chaque nœud, une nouvelle liste de tokens est créée et pour chaque token de cette liste, un type lui est appliqué.
 
 Le typage des tokens peut par exemple être utile pour créer un fichier de colorisation syntaxique en assignant une couleur à chaque type.
 
@@ -49,12 +49,12 @@ Le typage des tokens peut par exemple être utile pour créer un fichier de colo
 
 ## Spécifications
 
-| technologie                  |        outil |
-|:---------------------------- |-------------:|
-| Langage                      |          C++ |
-| Version du langage           |           20 |
-| Environnement                | Windows 7/10 |
-| Librairie                    |              |
+| technologie        |        outil |
+|:-------------------|-------------:|
+| Langage            |          C++ |
+| Version du langage |           20 |
+| Environnement      | Windows 7/10 |
+| Librairie          |              |
 
 ---
 
@@ -71,7 +71,7 @@ Le typage des tokens peut par exemple être utile pour créer un fichier de colo
 - [ ] Classe Node
 - [ ] Main
 - [ ] Gestion des erreurs
-- [ ] Detection des noeuds dans le match
+- [ ] Detection des nœuds dans le match
 
 # Grammaire
 
@@ -89,7 +89,7 @@ Le corps se compose d'au moins deux parties, `variables`, qui contient des expre
 
 ## Module
 
-`main` est le seul module qui est appelé sans qu'on l'incluse manuellement.
+`main` est le seul module qui est appelé sans qu'on l'inclue manuellement.
 
 Les `modules` traitent le code et s'occupe de la grosse part du travail, ils peuvent utiliser les variables définies dans le module, dans un module encore ouvert (variables locale) ou dans `variables`.
 
@@ -105,7 +105,7 @@ Les `modules` traitent le code et s'occupe de la grosse part du travail, ils peu
 
 - `begin`, crée un nœud et le débute.
 
-- `end`, ferme le nœud. Si 1 est renvoyé, le noeud se ferme sans erreur, sinon, une erreur est renvoyée au noeud parent.
+- `end`, ferme le nœud. Si 1 est renvoyé, le nœud se ferme sans erreur, sinon, une erreur est renvoyée au nœud parent.
 
 - `ignore`, ne fait pas avancer le curseur dans le texte.
 

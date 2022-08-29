@@ -461,7 +461,7 @@ void Node::change(std::string & key, Node & changedNode) {
 
 void Node::print(unsigned int level) {
     if(_type == typeNode::leaf) {
-        std::cout << _data;
+        std::cout << '"' << _data << '"';
     } else if(_type == typeNode::list) {
         std::cout << "[";
         for(Node & child: _childs_v) {
@@ -479,7 +479,7 @@ void Node::print(unsigned int level) {
         }
         std::cout << std::endl << std::string((level - 1U) * 2U, ' ') << "}";
     } else {
-        std::cout << "[]{}" << std::endl;
+        std::cout << "null";
     }
 }
 
